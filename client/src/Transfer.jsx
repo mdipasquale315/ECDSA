@@ -1,31 +1,53 @@
 import { useState } from "react";
-import server from "./server";
+import axios from "./server";
+import { keccak256 } from "ethereum-cryptography/keccak";
+import { utf8ToBytes, toHex, hexToBytes } from "ethereum-cryptography/utils";
+import * as secp from "ethereum-cryptography/secp256k1";
 
 export default function Transfer({ privateKey, address, setBalance }) {
   const [recipient, setRecipient] = useState("");
   const [amount, setAmount] = useState("");
 
-  async function send(e) {
-    e.preventDefault();
-    try {
-      const { data } = await server.post("/sign", { privateKey, recipient, amount });
-      const sendRes = await server.post("/send", {
-        message: data.message,
-        signature: data.signature,
-        recoveryBit: data.recoveryBit,
-      });
-      setBalance(sendRes.data.balance);
-      alert("Transfer successful!");
-    } catch (err) {
-      alert(err.response?.data?.message || err.message);
-    }
+  async function send() {
+    const senderKey = hexToBytes(privateKey);
+    const nonceRes = await axios.get(`/balance/${address}`);
+    const nonce = nonceRes.data.nonce;
+
+    const message = JSON.stringify({ sender: address, recipient, amount, nonce });
+    const msgHash = keccak256(utf8ToBytes(message));
+    const [signature, recoveryBit] = await secp.sign(msgHash, senderKey, { recovered: true });
+
+    const res = await axios.post("/send", {
+      message,
+      signature: toHex(signature),
+      recoveryBit,
+    });
+
+    setBalance(res.data.balance);
   }
 
   return (
-    <form onSubmit={send}>
-      <input placeholder="Recipient" value={recipient} onChange={e => setRecipient(e.target.value)} />
-      <input placeholder="Amount" value={amount} onChange={e => setAmount(e.target.value)} />
-      <button type="submit">Send</button>
-    </form>
+    <div className="bg-darkCard p-8 rounded-3xl glow-card w-96 text-center transform hover:scale-105 transition-transform duration-300">
+      <h2 className="text-xl mb-4 glitch-text">Send Funds</h2>
+      <input
+        className="w-full p-2 mb-4 rounded bg-darkBg text-neonBlue"
+        placeholder="Recipient address"
+        value={recipient}
+        onChange={(e) => setRecipient(e.target.value)}
+      />
+      <input
+        className="w-full p-2 mb-4 rounded bg-darkBg text-neonBlue"
+        placeholder="Amount"
+        type="number"
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
+      />
+      <button
+        onClick={send}
+        className="w-full py-3 bg-neonPink text-darkBg font-bold rounded-full hover:bg-neonBlue transition-colors animate-pulse shadow-neonPink/50"
+      >
+        Send
+      </button>
+    </div>
   );
 }
