@@ -3,7 +3,6 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./index.css";
 
-// Browser polyfills
 import { Buffer } from "buffer";
 window.Buffer = Buffer;
 
