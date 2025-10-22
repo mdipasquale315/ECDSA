@@ -11,7 +11,7 @@ export default function App() {
   return (
     <div className="relative min-h-screen overflow-hidden">
       {/* Animated Background */}
-      <AnimatedBackground />
+      <ParticleBackground />
       
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
