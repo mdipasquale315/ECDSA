@@ -2,7 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-body { @apply bg-darkBg text-neonBlue font-futuristic min-h-screen flex items-center justify-center; }
+body {
+  @apply bg-darkBg text-neonBlue font-futuristic min-h-screen flex items-center justify-center;
+}
 
 .neon-grid {
   background: linear-gradient(to right, rgba(0,255,255,0.1) 1px, transparent 1px),
