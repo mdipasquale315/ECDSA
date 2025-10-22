@@ -1,23 +1,17 @@
 import { useState } from "react";
-import server from "./server";
+import Wallet from "./Wallet";
+import Transfer from "./Transfer";
 
-export default function Wallet({ setAddress, setBalance, setPrivateKey }) {
-  const [loading, setLoading] = useState(false);
-
-  async function createWallet() {
-    setLoading(true);
-    const res = await server.post("/new-wallet");
-    setPrivateKey(res.data.privateKey);
-    setAddress(res.data.address);
-    setBalance(res.data.balance);
-    setLoading(false);
-  }
+export default function App() {
+  const [balance, setBalance] = useState(0);
+  const [address, setAddress] = useState("");
+  const [privateKey, setPrivateKey] = useState("");
 
   return (
-    <div>
-      <button onClick={createWallet} disabled={loading}>
-        {loading ? "Generating..." : "Generate Wallet"}
-      </button>
+    <div className="relative flex flex-col items-center justify-center min-h-screen overflow-hidden">
+      <div className="absolute top-0 left-0 w-full h-full neon-grid -z-10"></div>
+      <Wallet setBalance={setBalance} setAddress={setAddress} setPrivateKey={setPrivateKey} />
+      {privateKey && address && <Transfer privateKey={privateKey} address={address} setBalance={setBalance} />}
     </div>
   );
 }
