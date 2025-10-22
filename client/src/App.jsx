@@ -9,13 +9,13 @@ export default function App() {
   const [privateKey, setPrivateKey] = useState("");
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
-      {/* Animated Background */}
+    <div className="relative w-screen min-h-screen overflow-x-hidden">
+      {/* Full Screen Background */}
       <ParticleBackground />
       
       {/* Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
-        {/* Header */}
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen w-full px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
+        {/* Your existing content... */}
         <div className="text-center mb-6 sm:mb-8 md:mb-12 animate-fade-in w-full max-w-7xl">
           <div className="inline-block mb-3 sm:mb-4">
             <div className="flex items-center justify-center space-x-2 sm:space-x-3">
