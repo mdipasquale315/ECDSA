@@ -2,40 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  box-sizing: border-box;
+}
+
 body {
-  @apply bg-darkBg text-neonBlue font-futuristic min-h-screen flex items-center justify-center;
-}
-
-.neon-grid {
-  background: linear-gradient(to right, rgba(0,255,255,0.1) 1px, transparent 1px),
-              linear-gradient(to bottom, rgba(255,0,255,0.1) 1px, transparent 1px);
-  background-size: 50px 50px;
-  animation: moveGrid 10s linear infinite;
-}
-
-@keyframes moveGrid {
-  0% { background-position: 0 0, 0 0; }
-  50% { background-position: 25px 25px, 25px 25px; }
-  100% { background-position: 0 0, 0 0; }
-}
-
-.glow-card {
-  box-shadow: 0 0 20px rgba(0,255,255,0.6), 0 0 40px rgba(255,0,255,0.3);
-  border: 1px solid rgba(255,255,255,0.1);
-}
-
-@keyframes glitch {
-  0% { transform: translate(0); }
-  20% { transform: translate(-2px,2px); }
-  40% { transform: translate(-2px,-2px); }
-  60% { transform: translate(2px,2px); }
-  80% { transform: translate(2px,-2px); }
-  100% { transform: translate(0); }
-}
-
-.glitch-text {
-  color: #ff00ff;
-  position: relative;
-  animation: glitch 1s infinite;
-  text-shadow: 1px 0 cyan, -1px 0 magenta;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
