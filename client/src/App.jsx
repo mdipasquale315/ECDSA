@@ -1,6 +1,6 @@
 import Wallet from "./Wallet";
 import Transfer from "./Transfer";
-import AnimatedBackground from "./AnimatedBackground";
+import ParticleBackground from "./ParticleBackground";
 import { useState } from "react";
 
 export default function App() {
