@@ -1,4 +1,4 @@
-import ParticleBackground from "./components/ParticleBackground";
+import ParticleBackground from "./src/ParticleBackground";
 import Wallet from "./pages/Wallet";
 import Transfer from "./pages/Transfer";
 
