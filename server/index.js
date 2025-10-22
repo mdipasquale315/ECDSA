@@ -10,33 +10,24 @@ const port = process.env.PORT || 3042;
 app.use(cors());
 app.use(express.json());
 
-// --- Helpers ---
 function getAddressFromPublicKey(publicKey) {
   const pubNoPrefix = publicKey.slice(1);
   const hash = keccak256(pubNoPrefix);
   return "0x" + toHex(hash.slice(-20));
 }
 
-// --- Storage ---
 const balances = {};
 const nonces = {};
 
-// --- Create Wallet ---
 app.post("/new-wallet", (req, res) => {
   const privateKey = secp.utils.randomPrivateKey();
   const publicKey = secp.getPublicKey(privateKey);
   const address = getAddressFromPublicKey(publicKey);
   balances[address] = 100;
   nonces[address] = 0;
-  res.send({
-    privateKey: toHex(privateKey),
-    publicKey: toHex(publicKey),
-    address,
-    balance: balances[address],
-  });
+  res.send({ privateKey: toHex(privateKey), publicKey: toHex(publicKey), address, balance: balances[address] });
 });
 
-// --- Get Balance ---
 app.get("/balance/:address", (req, res) => {
   const { address } = req.params;
   balances[address] = balances[address] || 0;
@@ -44,7 +35,6 @@ app.get("/balance/:address", (req, res) => {
   res.send({ balance: balances[address], nonce: nonces[address] });
 });
 
-// --- Sign Transaction ---
 app.post("/sign", async (req, res) => {
   const { privateKey, recipient, amount } = req.body;
   const senderKey = hexToBytes(privateKey);
@@ -58,7 +48,6 @@ app.post("/sign", async (req, res) => {
   res.send({ message, signature: toHex(signature), recoveryBit, sender: senderAddress, nonce });
 });
 
-// --- Send Funds ---
 app.post("/send", async (req, res) => {
   try {
     const { message, signature, recoveryBit } = req.body;
