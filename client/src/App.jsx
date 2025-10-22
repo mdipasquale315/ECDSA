@@ -1,6 +1,6 @@
-import ParticleBackground from "./src/ParticleBackground";
-import Wallet from "./pages/Wallet";
-import Transfer from "./pages/Transfer";
+import ParticleBackground from "./ParticleBackground";
+import Wallet from "./Wallet";
+import Transfer from "./Transfer";
 
 export default function App() {
   return (
