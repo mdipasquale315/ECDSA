@@ -9,13 +9,15 @@ export default function App() {
   const [privateKey, setPrivateKey] = useState("");
 
   return (
-    <div className="relative w-screen min-h-screen overflow-x-hidden">
-      {/* Full Screen Background */}
-      <ParticleBackground />
+    <div className="relative w-screen min-h-screen">
+      {/* Background Layer - Behind Everything */}
+      <div className="fixed inset-0 z-0">
+        <ParticleBackground />
+      </div>
       
-      {/* Content */}
+      {/* Content Layer - Above Background */}
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen w-full px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
-        {/* Your existing content... */}
+        {/* Header */}
         <div className="text-center mb-6 sm:mb-8 md:mb-12 animate-fade-in w-full max-w-7xl">
           <div className="inline-block mb-3 sm:mb-4">
             <div className="flex items-center justify-center space-x-2 sm:space-x-3">
@@ -34,7 +36,7 @@ export default function App() {
           </p>
         </div>
 
-        {/* Main Content */}
+        {/* Main Content Cards */}
         <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
           <div className="animate-slide-in-left">
             <Wallet 
