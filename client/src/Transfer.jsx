@@ -1,44 +1,31 @@
 import { useState } from "react";
 import server from "./server";
-import { signMessage } from "./signMessage";
 
-function Transfer({ address, setBalance, privateKey }) {
+export default function Transfer({ privateKey, address, setBalance }) {
   const [recipient, setRecipient] = useState("");
   const [amount, setAmount] = useState("");
 
-  async function transfer(evt) {
-    evt.preventDefault();
-
-    const message = JSON.stringify({ sender: address, amount, recipient });
-    const { signature, recoveryBit } = await signMessage(message, privateKey);
-
+  async function send(e) {
+    e.preventDefault();
     try {
-      const {
-        data: { balance },
-      } = await server.post(`send`, {
-        message,
-        signature,
-        recoveryBit,
+      const { data } = await server.post("/sign", { privateKey, recipient, amount });
+      const sendRes = await server.post("/send", {
+        message: data.message,
+        signature: data.signature,
+        recoveryBit: data.recoveryBit,
       });
-      setBalance(balance);
-    } catch (ex) {
-      alert(ex.response.data.message);
+      setBalance(sendRes.data.balance);
+      alert("Transfer successful!");
+    } catch (err) {
+      alert(err.response?.data?.message || err.message);
     }
   }
 
   return (
-    <form className="container transfer" onSubmit={transfer}>
-      <h1>Send Transaction</h1>
-
-      <label>Send Amount</label>
-      <input value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="1, 2, 3..." />
-
-      <label>Recipient Address</label>
-      <input value={recipient} onChange={(e) => setRecipient(e.target.value)} placeholder="0x..." />
-
-      <input type="submit" className="button" value="Transfer" />
+    <form onSubmit={send}>
+      <input placeholder="Recipient" value={recipient} onChange={e => setRecipient(e.target.value)} />
+      <input placeholder="Amount" value={amount} onChange={e => setAmount(e.target.value)} />
+      <button type="submit">Send</button>
     </form>
   );
 }
-
-export default Transfer;
