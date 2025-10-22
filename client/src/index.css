@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-darkBg text-neonBlue font-futuristic min-h-screen flex items-center justify-center;
+}
+
+/* Neon Grid Background */
+.neon-grid {
+  background: linear-gradient(to right, rgba(0,255,255,0.1) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(255,0,255,0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: moveGrid 10s linear infinite;
+}
+
+@keyframes moveGrid {
+  0% { background-position: 0 0, 0 0; }
+  50% { background-position: 25px 25px, 25px 25px; }
+  100% { background-position: 0 0, 0 0; }
+}
+
+.glow-card {
+  box-shadow: 0 0 20px rgba(0,255,255,0.6), 0 0 40px rgba(255,0,255,0.3);
+  border: 1px solid rgba(255,255,255,0.1);
+}
