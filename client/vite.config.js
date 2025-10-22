@@ -1,16 +1,20 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-
-export default defineConfig({
-  plugins: [react()],
+// vite.config.js
+export default {
+  define: {
+    global: 'globalThis',
+  },
   resolve: {
     alias: {
-      process: "process/browser",
-      buffer: "buffer"
+      // Don't polyfill Node.js modules in browser
+      buffer: 'buffer',
+      process: 'process/browser',
     }
   },
-  define: {
-    global: "globalThis",
-    "process.env": {}
+  optimizeDeps: {
+    esbuildOptions: {
+      define: {
+        global: 'globalThis'
+      }
+    }
   }
-});
+}
