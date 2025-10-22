@@ -9,6 +9,7 @@ export default function Transfer({ privateKey, address, setBalance }) {
   const [recipient, setRecipient] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const setValue = (setter) => (evt) => setter(evt.target.value);
 
@@ -16,47 +17,59 @@ export default function Transfer({ privateKey, address, setBalance }) {
     evt.preventDefault();
     setError("");
     setSuccess("");
+    setLoading(true);
 
     try {
       // Validate inputs
       if (!recipient || !sendAmount) {
         setError("Please fill in all fields");
+        setLoading(false);
         return;
       }
 
       const amount = parseInt(sendAmount);
       if (isNaN(amount) || amount <= 0) {
         setError("Please enter a valid amount");
+        setLoading(false);
+        return;
+      }
+
+      // Validate recipient address
+      if (!/^[0-9a-fA-F]+$/.test(recipient)) {
+        setError("Invalid recipient address format");
+        setLoading(false);
         return;
       }
 
       // Create message to sign
       const message = JSON.stringify({
-        recipient,
-        amount,
-        nonce: Date.now() // Prevent replay attacks
+        sender: address,
+        recipient: recipient,
+        amount: amount,
+        nonce: Date.now()
       });
 
       // Hash the message
       const messageHash = keccak256(utf8ToBytes(message));
 
       // Sign the message
-      const privateKeyBytes = Uint8Array.from(Buffer.from(privateKey, 'hex'));
+      const privateKeyBytes = Uint8Array.from(
+        privateKey.match(/.{1,2}/g).map(byte => parseInt(byte, 16))
+      );
+      
       const signature = await secp256k1.sign(messageHash, privateKeyBytes);
 
       // Send signed transaction to server
-      const {
-        data: { balance },
-      } = await server.post(`send`, {
+      const response = await server.post(`send`, {
         sender: address,
-        recipient,
-        amount,
-        message,
-        signature: toHex(signature),
+        recipient: recipient,
+        amount: amount,
+        message: message,
+        signature: toHex(signature.toCompactRawBytes()),
         recovery: signature.recovery
       });
 
-      setBalance(balance);
+      setBalance(response.data.balance);
       setSuccess(`Successfully sent ${amount} ETH to ${recipient.substring(0, 10)}...`);
       setSendAmount("");
       setRecipient("");
@@ -64,6 +77,8 @@ export default function Transfer({ privateKey, address, setBalance }) {
       const errorMessage = ex?.response?.data?.message || ex.message || "Transfer failed";
       setError(errorMessage);
       console.error(ex);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -81,6 +96,7 @@ export default function Transfer({ privateKey, address, setBalance }) {
         onChange={setValue(setSendAmount)}
         type="number"
         min="1"
+        disabled={loading}
       />
 
       <label className="block text-gray-300 mb-2">
@@ -91,6 +107,7 @@ export default function Transfer({ privateKey, address, setBalance }) {
         placeholder="Recipient's public key"
         value={recipient}
         onChange={setValue(setRecipient)}
+        disabled={loading}
       />
 
       {error && (
@@ -107,9 +124,14 @@ export default function Transfer({ privateKey, address, setBalance }) {
 
       <button
         type="submit"
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded transition duration-200"
+        disabled={loading}
+        className={`w-full font-bold py-3 px-4 rounded transition duration-200 ${
+          loading 
+            ? 'bg-gray-600 cursor-not-allowed' 
+            : 'bg-blue-600 hover:bg-blue-700'
+        } text-white`}
       >
-        Transfer
+        {loading ? 'Processing...' : 'Transfer'}
       </button>
     </form>
   );
