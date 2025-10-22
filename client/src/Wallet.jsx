@@ -1,40 +1,23 @@
 import { useState } from "react";
 import server from "./server";
-import { generateKeys } from "./generateKeys";
 
-function Wallet({ address, setAddress, balance, setBalance, privateKey, setPrivateKey }) {
-  async function onChange(evt) {
-    const key = evt.target.value;
-    setPrivateKey(key);
+export default function Wallet({ setAddress, setBalance, setPrivateKey }) {
+  const [loading, setLoading] = useState(false);
 
-    try {
-      const response = await server.get(`/balance/${key}`);
-      setBalance(response.data.balance);
-      setAddress(response.data.address);
-    } catch (error) {
-      setBalance(0);
-    }
+  async function createWallet() {
+    setLoading(true);
+    const res = await server.post("/new-wallet");
+    setPrivateKey(res.data.privateKey);
+    setAddress(res.data.address);
+    setBalance(res.data.balance);
+    setLoading(false);
   }
 
   return (
-    <div className="container wallet">
-      <h1>Your Wallet</h1>
-      <label>Private Key</label>
-      <input placeholder="Enter your private key" value={privateKey} onChange={onChange} />
-
-      <div>Address: {address || "N/A"}</div>
-      <div>Balance: {balance}</div>
-
-      <button onClick={() => {
-        const keys = generateKeys();
-        setPrivateKey(keys.privateKey);
-        setAddress(keys.address);
-        alert(`New Wallet Generated:\nAddress: ${keys.address}`);
-      }}>
-        Generate New Wallet
+    <div>
+      <button onClick={createWallet} disabled={loading}>
+        {loading ? "Generating..." : "Generate Wallet"}
       </button>
     </div>
   );
 }
-
-export default Wallet;
