@@ -1,20 +1,17 @@
-// vite.config.js
-export default {
-  define: {
-    global: 'globalThis',
-  },
-  resolve: {
-    alias: {
-      // Don't polyfill Node.js modules in browser
-      buffer: 'buffer',
-      process: 'process/browser',
-    }
-  },
-  optimizeDeps: {
-    esbuildOptions: {
-      define: {
-        global: 'globalThis'
-      }
-    }
-  }
-}
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
+
+export default defineConfig({
+  plugins: [
+    react(),
+    nodePolyfills({
+      include: ['buffer', 'process', 'util', 'stream', 'events'],
+      globals: {
+        Buffer: true,
+        global: true,
+        process: true,
+      },
+    }),
+  ],
+});
