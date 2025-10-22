@@ -11,10 +11,23 @@ export default function App() {
   return (
     <div className="relative flex flex-col items-center justify-center min-h-screen overflow-hidden bg-black">
       <ParticleBackground />
-      <Wallet setBalance={setBalance} setAddress={setAddress} setPrivateKey={setPrivateKey} />
-      {privateKey && address && (
-        <Transfer privateKey={privateKey} address={address} setBalance={setBalance} />
-      )}
+      <div className="z-10 w-full max-w-4xl p-8">
+        <h1 className="text-4xl font-bold text-white text-center mb-8">
+          ECDSA Exchange
+        </h1>
+        <Wallet 
+          setBalance={setBalance} 
+          setAddress={setAddress} 
+          setPrivateKey={setPrivateKey} 
+        />
+        {privateKey && address && (
+          <Transfer 
+            privateKey={privateKey} 
+            address={address} 
+            setBalance={setBalance} 
+          />
+        )}
+      </div>
     </div>
   );
 }
