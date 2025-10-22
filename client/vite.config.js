@@ -10,7 +10,7 @@ export default defineConfig({
       buffer: "buffer",
       process: "process/browser",
       util: "util"
-    },
+    }
   },
   define: {
     global: "globalThis"
