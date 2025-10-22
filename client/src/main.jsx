@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./index.css";
 
-// Polyfills for ethereum-cryptography
+// Browser polyfills
 import { Buffer } from "buffer";
 window.Buffer = Buffer;
 
