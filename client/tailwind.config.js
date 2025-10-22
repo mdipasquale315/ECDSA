@@ -6,6 +6,10 @@ export default {
   ],
   theme: {
     extend: {
+      screens: {
+        'xs': '475px',
+        '3xl': '1920px',
+      },
       animation: {
         'blob': 'blob 7s infinite',
         'fade-in': 'fade-in 0.6s ease-out',
