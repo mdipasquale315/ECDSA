@@ -5,6 +5,8 @@ export default function ParticleBackground() {
 
   useEffect(() => {
     const canvas = canvasRef.current;
+    if (!canvas) return;
+    
     const ctx = canvas.getContext('2d');
     let animationFrameId;
     let particles = [];
@@ -101,30 +103,6 @@ export default function ParticleBackground() {
       }
     }
 
-    class Grid {
-      draw() {
-        if (isMobile) return; // Skip grid on mobile for performance
-        
-        ctx.strokeStyle = 'rgba(139, 92, 246, 0.05)';
-        ctx.lineWidth = 1;
-        const gridSize = 50;
-        
-        for (let x = 0; x < canvas.width; x += gridSize) {
-          ctx.beginPath();
-          ctx.moveTo(x, 0);
-          ctx.lineTo(x, canvas.height);
-          ctx.stroke();
-        }
-
-        for (let y = 0; y < canvas.height; y += gridSize) {
-          ctx.beginPath();
-          ctx.moveTo(0, y);
-          ctx.lineTo(canvas.width, y);
-          ctx.stroke();
-        }
-      }
-    }
-
     const init = () => {
       particles = [];
       const particleCount = isMobile 
@@ -142,15 +120,12 @@ export default function ParticleBackground() {
       ];
     };
 
-    const grid = new Grid();
-
     const animate = () => {
       time += 0.01;
 
       ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      grid.draw();
       waves.forEach(wave => wave.draw());
 
       particles.forEach(particle => {
@@ -160,7 +135,6 @@ export default function ParticleBackground() {
 
       ctx.shadowBlur = 0;
       
-      // Draw connections only on desktop or reduce on mobile
       const connectionDistance = isMobile ? 100 : 150;
       particles.forEach((p1, i) => {
         particles.slice(i + 1).forEach(p2 => {
@@ -180,7 +154,6 @@ export default function ParticleBackground() {
         });
       });
 
-      // Draw glowing orbs (smaller on mobile)
       const orbSize = isMobile ? 100 : 150;
       drawGlowingOrb(canvas.width * 0.2, canvas.height * 0.3, orbSize, 'rgba(139, 92, 246, 0.1)');
       drawGlowingOrb(canvas.width * 0.8, canvas.height * 0.6, orbSize * 1.3, 'rgba(59, 130, 246, 0.1)');
@@ -236,21 +209,29 @@ export default function ParticleBackground() {
   }, []);
 
   return (
-    <div className="fixed inset-0 overflow-hidden bg-black">
+    <div className="fixed top-0 left-0 w-screen h-screen overflow-hidden">
+      {/* Base black background */}
+      <div className="absolute inset-0 bg-black" />
+      
+      {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-purple-900/30 to-blue-900/20" />
       
-      <div className="absolute top-0 left-0 w-full h-full">
+      {/* Glowing orbs */}
+      <div className="absolute inset-0">
         <div className="absolute top-1/4 left-1/4 w-48 sm:w-72 md:w-96 h-48 sm:h-72 md:h-96 bg-purple-600/20 rounded-full filter blur-3xl animate-pulse" />
         <div className="absolute bottom-1/4 right-1/4 w-48 sm:w-72 md:w-96 h-48 sm:h-72 md:h-96 bg-blue-600/20 rounded-full filter blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
         <div className="absolute top-1/2 right-1/3 w-48 sm:w-72 md:w-96 h-48 sm:h-72 md:h-96 bg-pink-600/20 rounded-full filter blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
       </div>
       
+      {/* Canvas for particles */}
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full"
+        style={{ width: '100vw', height: '100vh' }}
       />
       
-      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/30" />
+      {/* Top and bottom fade overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/30 pointer-events-none" />
     </div>
   );
 }
