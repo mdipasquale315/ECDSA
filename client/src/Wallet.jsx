@@ -20,34 +20,41 @@ export default function Wallet({ setBalance, setAddress, setPrivateKey }) {
     }
 
     try {
-      // Convert hex string to bytes
-      const privateKeyBytes = privateKey.length === 64 
-        ? Uint8Array.from(Buffer.from(privateKey, 'hex'))
-        : null;
-
-      if (!privateKeyBytes || privateKeyBytes.length !== 32) {
-        setError("Invalid private key format. Must be 64 hex characters.");
+      // Validate hex string
+      if (!/^[0-9a-fA-F]{64}$/.test(privateKey)) {
+        if (privateKey.length === 64) {
+          setError("Invalid private key format. Must be 64 hex characters.");
+        }
         return;
       }
 
+      // Convert hex string to bytes
+      const privateKeyBytes = Uint8Array.from(
+        privateKey.match(/.{1,2}/g).map(byte => parseInt(byte, 16))
+      );
+
       // Generate public key
       const publicKey = secp256k1.getPublicKey(privateKeyBytes);
-      const address = toHex(publicKey);
+      const derivedAddress = toHex(publicKey);
 
-      setAddress(address);
+      // Update parent state
+      setAddress(derivedAddress);
       setPrivateKey(privateKey);
 
       // Get balance from server
-      const {
-        data: { balance },
-      } = await server.get(`balance/${address}`);
-      
-      setBalance(balance);
+      try {
+        const response = await server.get(`balance/${derivedAddress}`);
+        setBalance(response.data.balance);
+      } catch (err) {
+        console.error("Error fetching balance:", err);
+        setBalance(0);
+      }
     } catch (ex) {
       console.error(ex);
       setError("Error deriving address from private key");
       setAddress("");
       setBalance(0);
+      setPrivateKey("");
     }
   }
 
@@ -70,16 +77,16 @@ export default function Wallet({ setBalance, setAddress, setPrivateKey }) {
         <div className="text-red-400 text-sm mb-2">{error}</div>
       )}
 
-      {address && (
+      {privateKeyInput && (
         <div className="mt-4">
           <div className="text-gray-400 text-sm mb-1">Address:</div>
           <div className="text-white font-mono text-xs break-all bg-gray-800 p-2 rounded">
-            {address}
+            {privateKeyInput.length === 64 ? "Loading..." : "Enter valid private key"}
           </div>
           
           <div className="text-gray-400 text-sm mt-3 mb-1">Balance:</div>
           <div className="text-2xl font-bold text-green-400">
-            {balance} ETH
+            Loading...
           </div>
         </div>
       )}
