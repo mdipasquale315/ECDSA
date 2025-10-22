@@ -209,7 +209,7 @@ export default function ParticleBackground() {
   }, []);
 
   return (
-    <div className="fixed top-0 left-0 w-screen h-screen overflow-hidden">
+    <>
       {/* Base black background */}
       <div className="absolute inset-0 bg-black" />
       
@@ -217,7 +217,7 @@ export default function ParticleBackground() {
       <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-purple-900/30 to-blue-900/20" />
       
       {/* Glowing orbs */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-48 sm:w-72 md:w-96 h-48 sm:h-72 md:h-96 bg-purple-600/20 rounded-full filter blur-3xl animate-pulse" />
         <div className="absolute bottom-1/4 right-1/4 w-48 sm:w-72 md:w-96 h-48 sm:h-72 md:h-96 bg-blue-600/20 rounded-full filter blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
         <div className="absolute top-1/2 right-1/3 w-48 sm:w-72 md:w-96 h-48 sm:h-72 md:h-96 bg-pink-600/20 rounded-full filter blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
@@ -227,11 +227,10 @@ export default function ParticleBackground() {
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full"
-        style={{ width: '100vw', height: '100vh' }}
       />
       
       {/* Top and bottom fade overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/30 pointer-events-none" />
-    </div>
+    </>
   );
 }
