@@ -1,17 +1,28 @@
 import { useState } from "react";
-import Wallet from "./Wallet";
-import Transfer from "./Transfer";
+import axios from "./server";
 
-export default function App() {
-  const [balance, setBalance] = useState(0);
-  const [address, setAddress] = useState("");
-  const [privateKey, setPrivateKey] = useState("");
+export default function Wallet({ setBalance, setAddress, setPrivateKey }) {
+  const [loading, setLoading] = useState(false);
+
+  async function createWallet() {
+    setLoading(true);
+    const res = await axios.post("/new-wallet");
+    setPrivateKey(res.data.privateKey);
+    setAddress(res.data.address);
+    setBalance(res.data.balance);
+    setLoading(false);
+  }
 
   return (
-    <div className="relative flex flex-col items-center justify-center min-h-screen overflow-hidden">
-      <div className="absolute top-0 left-0 w-full h-full neon-grid -z-10"></div>
-      <Wallet setBalance={setBalance} setAddress={setAddress} setPrivateKey={setPrivateKey} />
-      {privateKey && address && <Transfer privateKey={privateKey} address={address} setBalance={setBalance} />}
+    <div className="bg-darkCard p-8 rounded-3xl glow-card w-96 text-center mb-8 transform hover:scale-105 transition-transform duration-300">
+      <h1 className="text-3xl mb-4 glitch-text">⚡ Futuristic Wallet</h1>
+      <button
+        onClick={createWallet}
+        disabled={loading}
+        className="px-6 py-3 mb-6 text-darkBg bg-neonBlue rounded-full font-bold hover:bg-neonPink transition-colors animate-pulse shadow-neonBlue/50"
+      >
+        {loading ? "Generating..." : "Generate Wallet"}
+      </button>
     </div>
   );
 }
